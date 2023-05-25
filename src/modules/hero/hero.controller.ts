@@ -15,6 +15,7 @@ import HeroesService from './hero.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs-extra';
 import { FileArray } from 'express-fileupload';
+import IHeroResponse from 'src/shared/interfaces/getAllHeroes';
 
 @Controller('heroes')
 export default class HeroesController {
@@ -24,7 +25,7 @@ export default class HeroesController {
   async findAll(
     @Query('page') page = 1,
     @Query('limit') limit = 5,
-  ): Promise<Hero[]> {
+  ): Promise<IHeroResponse[]> {
     return this.heroesService.findAll(page, limit);
   }
 

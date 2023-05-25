@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Hero from './entity/hero.entity';
+import IHeroResponse from 'src/shared/interfaces/getAllHeroes';
 
 @Injectable()
 export default class HeroesService {
@@ -10,10 +11,15 @@ export default class HeroesService {
     private heroesRepository: Repository<Hero>,
   ) {}
 
-  async findAll(page: number, limit: number): Promise<Hero[]> {
+  async findAll(page: number, limit: number): Promise<IHeroResponse[]> {
     try {
       const skip = (page - 1) * limit;
-      return this.heroesRepository.find({ skip, take: limit });
+      const heroes = this.heroesRepository.find({ skip, take: limit });
+
+      return (await heroes).map((hero) => ({
+        nickname: hero.nickname,
+        image: hero.images && hero.images.length > 0 ? hero.images[0] : null,
+      }));
     } catch (err) {
       throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
