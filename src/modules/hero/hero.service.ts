@@ -12,16 +12,27 @@ export default class HeroesService {
     private heroesRepository: Repository<Hero>,
   ) {}
 
-  async findAll(page: number, limit: number): Promise<IHeroResponse[]> {
+  async findAll(
+    page: number,
+    limit: number,
+  ): Promise<{ data: IHeroResponse[]; totalHeroes: number }> {
     try {
       const skip = (page - 1) * limit;
-      const heroes = this.heroesRepository.find({ skip, take: limit });
+      const [heroes, totalCount] = await this.heroesRepository.findAndCount({
+        skip,
+        take: limit,
+      });
 
-      return (await heroes).map((hero) => ({
+      const formattedHeroes: IHeroResponse[] = heroes.map((hero) => ({
         id: hero.id,
         nickname: hero.nickname,
-        images: hero.images && hero.images.length > 0 ? hero.images[0] : null,
+        images:
+          hero.images && hero.images.length > 0
+            ? hero.images[0].replace(/^uploads\//, '')
+            : null,
       }));
+
+      return { data: formattedHeroes, totalHeroes: totalCount };
     } catch (err) {
       throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }

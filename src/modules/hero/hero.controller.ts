@@ -16,6 +16,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs-extra';
 import { FileArray } from 'express-fileupload';
 import { IHeroResponse } from 'src/shared/interfaces';
+import { join } from 'path';
 
 @Controller('heroes')
 export default class HeroesController {
@@ -25,7 +26,7 @@ export default class HeroesController {
   async findAll(
     @Query('page') page = 1,
     @Query('limit') limit = 5,
-  ): Promise<IHeroResponse[]> {
+  ): Promise<{ data: IHeroResponse[]; totalHeroes: number }> {
     return this.heroesService.findAll(page, limit);
   }
 
@@ -67,5 +68,25 @@ export default class HeroesController {
       uploadedFilePaths,
     );
     return hero;
+  }
+
+  @Get('/:id/upload')
+  async getPhoto(@Param('id') id: number): Promise<string | null> {
+    const uploadDir = 'uploads';
+    const dirPath = join(uploadDir, `${id}`);
+    const dirExists = await fs.pathExists(dirPath);
+
+    if (dirExists) {
+      const files = await fs.readdir(dirPath);
+
+      if (files.length > 0) {
+        const firstFile = files[0];
+        const filePath = join(dirPath, firstFile);
+        const relativePath = filePath.replace(`${uploadDir}/`, '');
+        return relativePath;
+      }
+    }
+
+    return null;
   }
 }
