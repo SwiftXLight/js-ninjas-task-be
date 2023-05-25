@@ -1,4 +1,5 @@
 export default interface IHeroResponse {
+  id: number;
   nickname: string;
-  image: string | null;
+  images: string | null;
 }

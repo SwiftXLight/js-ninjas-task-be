@@ -18,8 +18,9 @@ export default class HeroesService {
       const heroes = this.heroesRepository.find({ skip, take: limit });
 
       return (await heroes).map((hero) => ({
+        id: hero.id,
         nickname: hero.nickname,
-        image: hero.images && hero.images.length > 0 ? hero.images[0] : null,
+        images: hero.images && hero.images.length > 0 ? hero.images[0] : null,
       }));
     } catch (err) {
       throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
