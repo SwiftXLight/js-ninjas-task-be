@@ -19,4 +19,7 @@ export default class Hero {
 
   @Column()
   catchPhrase: string;
+
+  @Column('simple-array', { nullable: true })
+  images: string[];
 }

@@ -33,7 +33,9 @@ export default class HeroesService {
 
   async create(hero: Hero): Promise<Hero> {
     try {
-      return this.heroesRepository.save(hero);
+      const createdHero = await this.heroesRepository.save(hero);
+
+      return createdHero;
     } catch (err) {
       throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -54,6 +56,19 @@ export default class HeroesService {
   async delete(heroId: number): Promise<void> {
     try {
       await this.heroesRepository.delete(heroId);
+    } catch (err) {
+      throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async updateHeroImages(heroId: number, imagePaths: string[]): Promise<Hero> {
+    try {
+      const hero = await this.heroesRepository.findOneOrFail({
+        where: { id: heroId },
+      });
+      hero.images = imagePaths;
+
+      return this.heroesRepository.save(hero);
     } catch (err) {
       throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
