@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Hero from './entity/hero.entity';
 import IHeroResponse from 'src/shared/interfaces/getAllHeroes';
+import { promises as fsPromises, constants } from 'fs';
 
 @Injectable()
 export default class HeroesService {
@@ -72,11 +73,34 @@ export default class HeroesService {
       const hero = await this.heroesRepository.findOneOrFail({
         where: { id: heroId },
       });
-      hero.images = imagePaths;
 
+      const { readdir, unlink } = fsPromises;
+      const directoryPath = `uploads/${heroId}`;
+      const existingFiles = await readdir(directoryPath);
+
+      const filesToDelete = existingFiles.filter((file) => {
+        const filePath = `${directoryPath}/${file}`;
+        return !imagePaths.includes(filePath);
+      });
+
+      for (const fileToDelete of filesToDelete) {
+        const filePath = `${directoryPath}/${fileToDelete}`;
+        await unlink(filePath);
+      }
+
+      hero.images = imagePaths;
       return this.heroesRepository.save(hero);
     } catch (err) {
       throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async fileExists(filePath: string): Promise<boolean> {
+    try {
+      await fsPromises.access(filePath, constants.F_OK);
+      return true;
+    } catch {
+      return false;
     }
   }
 }
