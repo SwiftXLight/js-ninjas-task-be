@@ -2,8 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Hero from './entity/hero.entity';
-import IHeroResponse from 'src/shared/interfaces/getAllHeroes';
 import { promises as fsPromises, constants } from 'fs';
+import { IHeroResponse } from 'src/shared/interfaces';
 
 @Injectable()
 export default class HeroesService {

@@ -15,7 +15,7 @@ import HeroesService from './hero.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs-extra';
 import { FileArray } from 'express-fileupload';
-import IHeroResponse from 'src/shared/interfaces/getAllHeroes';
+import { IHeroResponse } from 'src/shared/interfaces';
 
 @Controller('heroes')
 export default class HeroesController {
