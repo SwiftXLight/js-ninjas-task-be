@@ -6,6 +6,7 @@ import {
   Delete,
   Param,
   Body,
+  Query,
 } from '@nestjs/common';
 import Hero from './entity/hero.entity';
 import HeroesService from './hero.service';
@@ -15,8 +16,11 @@ export default class HeroesController {
   constructor(private heroesService: HeroesService) {}
 
   @Get()
-  async findAll(): Promise<Hero[]> {
-    return this.heroesService.findAll();
+  async findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 5,
+  ): Promise<Hero[]> {
+    return this.heroesService.findAll(page, limit);
   }
 
   @Get('/:id')

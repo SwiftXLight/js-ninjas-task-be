@@ -10,9 +10,10 @@ export default class HeroesService {
     private heroesRepository: Repository<Hero>,
   ) {}
 
-  async findAll(): Promise<Hero[]> {
+  async findAll(page: number, limit: number): Promise<Hero[]> {
     try {
-      return this.heroesRepository.find();
+      const skip = (page - 1) * limit;
+      return this.heroesRepository.find({ skip, take: limit });
     } catch (err) {
       throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
