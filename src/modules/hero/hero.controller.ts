@@ -89,4 +89,12 @@ export default class HeroesController {
 
     return null;
   }
+
+  @Delete('/:id/images/:filename')
+  async deleteHeroImage(
+    @Param('id') id: number,
+    @Param('filename') filename: string,
+  ): Promise<Hero> {
+    return this.heroesService.deleteHeroImage(id, filename);
+  }
 }
