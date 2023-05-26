@@ -16,7 +16,6 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs-extra';
 import { FileArray } from 'express-fileupload';
 import { IHeroResponse } from 'src/shared/interfaces';
-import { join } from 'path';
 
 @Controller('heroes')
 export default class HeroesController {
@@ -70,24 +69,24 @@ export default class HeroesController {
     return hero;
   }
 
-  @Get('/:id/upload')
-  async getPhoto(@Param('id') id: number): Promise<string | null> {
-    const uploadDir = 'uploads';
-    const dirPath = join(uploadDir, `${id}`);
-    const dirExists = await fs.pathExists(dirPath);
-
-    if (dirExists) {
-      const files = await fs.readdir(dirPath);
-
-      if (files.length > 0) {
-        const firstFile = files[0];
-        const filePath = join(dirPath, firstFile);
-        const relativePath = filePath.replace(`${uploadDir}/`, '');
-        return relativePath;
-      }
+  @Post('/:id/upload/append')
+  @UseInterceptors(FilesInterceptor('files'))
+  async uploadFilesAppend(
+    @UploadedFiles() files: FileArray,
+    @Param('id') id: number,
+  ): Promise<Hero> {
+    const uploadedFilePaths: string[] = [];
+    for (const file of files) {
+      const filePath = `uploads/${id}/${file.originalname}`;
+      await fs.move(file.path, filePath, { overwrite: true });
+      uploadedFilePaths.push(filePath);
     }
 
-    return null;
+    const hero = await this.heroesService.appendHeroImages(
+      id,
+      uploadedFilePaths,
+    );
+    return hero;
   }
 
   @Delete('/:id/images/:filename')

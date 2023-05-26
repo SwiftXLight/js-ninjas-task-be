@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Hero from './entity/hero.entity';
-import { promises as fsPromises, constants } from 'fs';
+import { promises as fsPromises } from 'fs';
 import { IHeroResponse } from 'src/shared/interfaces';
 import * as fs from 'fs/promises';
 
@@ -116,12 +116,16 @@ export default class HeroesService {
     }
   }
 
-  async fileExists(filePath: string): Promise<boolean> {
+  async appendHeroImages(heroId: number, imagePaths: string[]): Promise<Hero> {
     try {
-      await fsPromises.access(filePath, constants.F_OK);
-      return true;
-    } catch {
-      return false;
+      const hero = await this.heroesRepository.findOneOrFail({
+        where: { id: heroId },
+      });
+
+      hero.images = [...hero.images, ...imagePaths];
+      return this.heroesRepository.save(hero);
+    } catch (err) {
+      throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
