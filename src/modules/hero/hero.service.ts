@@ -44,6 +44,14 @@ export default class HeroesService {
         where: { id: heroId },
       });
 
+      if (hero.images) {
+        hero.images = hero.images.map((path) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const [_, ...rest] = path.split('/');
+          return rest.join('/');
+        });
+      }
+
       return hero;
     } catch (err) {
       throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
