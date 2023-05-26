@@ -143,7 +143,7 @@ export default class HeroesService {
       const directoryPath = `uploads/${heroId}`;
       const filePath = `${directoryPath}/${filename}`;
 
-      await fs.unlink(filePath);
+      await fsPromises.unlink(filePath).catch(() => {});
 
       hero.images = hero.images.filter((image) => image !== filePath);
 

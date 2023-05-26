@@ -133,4 +133,47 @@ describe('HeroesController', () => {
       expect(result).toEqual({ id: heroId, images: uploadedFilePaths } as Hero);
     });
   });
+
+  describe('uploadFilesAppend', () => {
+    it('should upload files and update hero images', async () => {
+      const heroId = 1;
+      const files = [
+        { originalname: 'file1.jpg', path: 'path/to/file1.jpg' },
+        { originalname: 'file2.jpg', path: 'path/to/file2.jpg' },
+      ];
+
+      const uploadedFilePaths = ['uploads/1/file1.jpg', 'uploads/1/file2.jpg'];
+
+      jest.spyOn(fs, 'move').mockResolvedValue(undefined);
+      jest
+        .spyOn(service, 'appendHeroImages')
+        .mockResolvedValue({ id: heroId, images: uploadedFilePaths } as Hero);
+
+      const result = await controller.uploadFilesAppend(
+        files as FileArray,
+        heroId,
+      );
+
+      expect(fs.move).toHaveBeenCalledTimes(4);
+      expect(service.appendHeroImages).toHaveBeenCalledWith(
+        heroId,
+        uploadedFilePaths,
+      );
+      expect(result).toEqual({ id: heroId, images: uploadedFilePaths } as Hero);
+    });
+  });
+
+  describe('deleteHeroImage', () => {
+    it('should delete a hero image', async () => {
+      const heroId = 1;
+      const filename = 'file1.jpg';
+
+      jest.spyOn(service, 'deleteHeroImage').mockResolvedValue(mockedHero);
+
+      const result = await controller.deleteHeroImage(heroId, filename);
+
+      expect(service.deleteHeroImage).toHaveBeenCalledWith(heroId, filename);
+      expect(result).toEqual(mockedHero);
+    });
+  });
 });

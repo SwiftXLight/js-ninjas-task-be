@@ -5,6 +5,7 @@ import Hero from './entity/hero.entity';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Dirent, promises as fsPromises } from 'fs';
 import { IHeroResponse } from 'src/shared/interfaces';
+import * as fs from 'fs/promises';
 
 const mockedHero = {
   nickname: 'John Doe',
@@ -30,18 +31,20 @@ describe('HeroesService', () => {
   let updateMock: jest.Mock;
   let deleteMock: jest.Mock;
   let findOneOrFailMock: jest.Mock;
-
+  let saveMock: jest.Mock;
   beforeEach(async () => {
     deleteMock = jest.fn();
     findOneMock = jest.fn();
     updateMock = jest.fn();
     findOneOrFailMock = jest.fn();
+    saveMock = jest.fn();
 
     heroesRepositoryMock = {
       delete: deleteMock,
       findOne: findOneMock,
       update: updateMock,
       findOneOrFail: findOneOrFailMock,
+      save: saveMock,
     };
 
     module = await Test.createTestingModule({
@@ -209,6 +212,93 @@ describe('HeroesService', () => {
         service.uploadHeroImages(heroId, imagePaths),
       ).rejects.toThrowError(
         new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR),
+      );
+    });
+  });
+
+  describe('appendHeroImages', () => {
+    it('should append hero images and return the updated hero', async () => {
+      const heroId = 1;
+      const imagePaths = ['uploads/1/image1.jpg', 'uploads/1/image2.jpg'];
+      const existingImages = ['path/to/file1.jpg', 'path/to/file2.jpg'];
+      const updatedImages = [...existingImages, ...imagePaths];
+
+      const hero = {
+        id: heroId,
+        images: existingImages,
+      } as Hero;
+
+      findOneOrFailMock.mockResolvedValue(hero);
+      saveMock.mockResolvedValue(hero);
+
+      const result = await service.appendHeroImages(heroId, imagePaths);
+
+      expect(heroesRepositoryMock.findOneOrFail).toHaveBeenCalledWith({
+        where: { id: heroId },
+      });
+      expect(hero.images).toEqual(updatedImages);
+      expect(heroesRepositoryMock.save).toHaveBeenCalledWith(hero);
+      expect(result).toBe(hero);
+    });
+
+    it('should throw an HttpException when an error occurs', async () => {
+      const heroId = 1;
+      const imagePaths = ['uploads/1/image1.jpg'];
+
+      const error = new Error('Database error');
+      findOneOrFailMock.mockRejectedValue(error);
+
+      await expect(
+        service.appendHeroImages(heroId, imagePaths),
+      ).rejects.toThrowError(
+        new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR),
+      );
+    });
+  });
+
+  describe('deleteHeroImage', () => {
+    const mockHeroId = 1;
+    const mockFilename = 'image.jpg';
+
+    it('should delete the hero image and return the updated hero', async () => {
+      const mockHero = new Hero();
+      mockHero.id = mockHeroId;
+      mockHero.images = [`uploads/${mockHeroId}/${mockFilename}`];
+      jest
+        .spyOn(heroesRepositoryMock, 'findOneOrFail')
+        .mockResolvedValue(mockHero);
+
+      jest.spyOn(fs, 'unlink').mockResolvedValue(undefined);
+
+      jest.spyOn(heroesRepositoryMock, 'save').mockResolvedValue(mockHero);
+
+      const updatedHero = await service.deleteHeroImage(
+        mockHeroId,
+        mockFilename,
+      );
+
+      expect(heroesRepositoryMock.findOneOrFail).toHaveBeenCalledWith({
+        where: { id: mockHeroId },
+      });
+      expect(fs.unlink).toHaveBeenCalledWith(
+        `uploads/${mockHeroId}/${mockFilename}`,
+      );
+      expect(heroesRepositoryMock.save).toHaveBeenCalledWith(mockHero);
+      expect(updatedHero).toEqual(mockHero);
+    });
+
+    it('should throw an internal server error if an error occurs', async () => {
+      jest
+        .spyOn(heroesRepositoryMock, 'findOneOrFail')
+        .mockRejectedValue(new Error('Database error'));
+
+      await expect(
+        service.deleteHeroImage(mockHeroId, mockFilename),
+      ).rejects.toThrowError(
+        new HttpException(
+          'Error: Database error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        ),
       );
     });
   });
