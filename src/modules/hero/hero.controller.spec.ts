@@ -120,13 +120,13 @@ describe('HeroesController', () => {
 
       jest.spyOn(fs, 'move').mockResolvedValue(undefined);
       jest
-        .spyOn(service, 'updateHeroImages')
+        .spyOn(service, 'uploadHeroImages')
         .mockResolvedValue({ id: heroId, images: uploadedFilePaths } as Hero);
 
       const result = await controller.uploadFiles(files as FileArray, heroId);
 
       expect(fs.move).toHaveBeenCalledTimes(2);
-      expect(service.updateHeroImages).toHaveBeenCalledWith(
+      expect(service.uploadHeroImages).toHaveBeenCalledWith(
         heroId,
         uploadedFilePaths,
       );

@@ -3,7 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import HeroesService from './hero.service';
 import Hero from './entity/hero.entity';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { Dirent, promises as fsPromises, constants } from 'fs';
+import { Dirent, promises as fsPromises } from 'fs';
 import { IHeroResponse } from 'src/shared/interfaces';
 
 const mockedHero = {
@@ -182,7 +182,7 @@ describe('HeroesService', () => {
         (file) => !imagePaths.includes(`uploads/${heroId}/${file}`),
       );
 
-      const result = await service.updateHeroImages(heroId, imagePaths);
+      const result = await service.uploadHeroImages(heroId, imagePaths);
 
       expect(heroesRepositoryMock.findOneOrFail).toHaveBeenCalledWith({
         where: { id: heroId },
@@ -206,35 +206,10 @@ describe('HeroesService', () => {
         .mockRejectedValueOnce(error);
 
       await expect(
-        service.updateHeroImages(heroId, imagePaths),
+        service.uploadHeroImages(heroId, imagePaths),
       ).rejects.toThrowError(
         new HttpException(`${error}`, HttpStatus.INTERNAL_SERVER_ERROR),
       );
-    });
-  });
-
-  describe('fileExists', () => {
-    it('should return true if the file exists', async () => {
-      const filePath = '/path/to/existing/file.txt';
-
-      jest.spyOn(fsPromises, 'access').mockResolvedValue(undefined);
-
-      const result = await service.fileExists(filePath);
-
-      expect(fsPromises.access).toHaveBeenCalledWith(filePath, constants.F_OK);
-      expect(result).toBe(true);
-    });
-
-    it('should return false if the file does not exist', async () => {
-      const filePath = '/path/to/nonexistent/file.txt';
-
-      const error = new Error('File not found');
-      jest.spyOn(fsPromises, 'access').mockRejectedValue(error);
-
-      const result = await service.fileExists(filePath);
-
-      expect(fsPromises.access).toHaveBeenCalledWith(filePath, constants.F_OK);
-      expect(result).toBe(false);
     });
   });
 

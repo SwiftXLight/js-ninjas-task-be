@@ -4,7 +4,8 @@ import { Repository } from 'typeorm';
 import Hero from './entity/hero.entity';
 import { promises as fsPromises } from 'fs';
 import { IHeroResponse } from 'src/shared/interfaces';
-import * as fs from 'fs/promises';
+import * as fs from 'fs-extra';
+import { join } from 'path';
 
 @Injectable()
 export default class HeroesService {
@@ -84,12 +85,16 @@ export default class HeroesService {
   async delete(heroId: number): Promise<void> {
     try {
       await this.heroesRepository.delete(heroId);
+
+      const directoryPath = join('uploads', String(heroId));
+
+      await fs.remove(directoryPath);
     } catch (err) {
       throw new HttpException(`${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  async updateHeroImages(heroId: number, imagePaths: string[]): Promise<Hero> {
+  async uploadHeroImages(heroId: number, imagePaths: string[]): Promise<Hero> {
     try {
       const hero = await this.heroesRepository.findOneOrFail({
         where: { id: heroId },

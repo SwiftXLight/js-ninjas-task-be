@@ -62,7 +62,7 @@ export default class HeroesController {
       uploadedFilePaths.push(filePath);
     }
 
-    const hero = await this.heroesService.updateHeroImages(
+    const hero = await this.heroesService.uploadHeroImages(
       id,
       uploadedFilePaths,
     );
