@@ -4,6 +4,7 @@ import HeroesService from './hero.service';
 import Hero from './entity/hero.entity';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Dirent, promises as fsPromises, constants } from 'fs';
+import { IHeroResponse } from 'src/shared/interfaces';
 
 const mockedHero = {
   nickname: 'John Doe',
@@ -60,7 +61,10 @@ describe('HeroesService', () => {
     it('should return an array of heroes', async () => {
       const page = 1;
       const limit = 5;
-      const result: (typeof mockedHeroShort)[] = [mockedHeroShort];
+      const result: { data: IHeroResponse[]; totalHeroes: number } = {
+        data: [mockedHeroShort],
+        totalHeroes: 1,
+      };
 
       jest.spyOn(service, 'findAll').mockResolvedValue(result);
 

@@ -5,6 +5,7 @@ import HeroesService from './hero.service';
 import Hero from './entity/hero.entity';
 import * as fs from 'fs-extra';
 import { FileArray } from 'express-fileupload';
+import { IHeroResponse } from 'src/shared/interfaces';
 
 const mockedHero = {
   nickname: 'John Doe',
@@ -44,7 +45,10 @@ describe('HeroesController', () => {
 
   describe('findAll', () => {
     it('should return an array of heroes', async () => {
-      const result: (typeof mockedHeroShort)[] = [mockedHeroShort];
+      const result: { data: IHeroResponse[]; totalHeroes: number } = {
+        data: [mockedHeroShort],
+        totalHeroes: 1,
+      };
 
       jest.spyOn(service, 'findAll').mockResolvedValue(result);
 
