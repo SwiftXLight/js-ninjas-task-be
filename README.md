@@ -110,7 +110,7 @@ The deployed application includes some pre-made hero items to facilitate testing
 
 Once both the frontend and backend servers are running, you can use the web application as follows:
 
-1.  Open your web browser and visit `http://localhost:3000` to access the application.
+1.  Open your web browser and visit `http://localhost:3000` or `http://js-ninjas-fe.s3-website.eu-central-1.amazonaws.com/` to access the application.
 2.  The initial page will display an empty list of heroes.
 3.  Click on the "Create" button to add a new hero.
 4.  Fill in all the required fields and optionally upload up to 5 files for the hero.
