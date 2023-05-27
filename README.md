@@ -111,13 +111,15 @@ Once both the frontend and backend servers are running, you can use the web appl
     - "Previous" button: Click to go to the previous page.
     - "Next" button: Click to go to the next page.
     - "First" button: Click to go to the first page.
-    - "Last" button: Click to go to the last page. Note: If you are on the first page, the "Previous" and "First" buttons will be disabled. If you are on the last page, the "Next" and "Last" buttons will be disabled.
-7.  Each hero item in the list will have two buttons: "Delete" and "Details".
-8.  Clicking the "Delete" button will remove the hero from the list.
-9.  Clicking the "Details" button will redirect you to a detailed hero information page.
-10. On the details page, you will find an "Edit" button to modify the hero's information.
-11. Clicking the "Edit" button will redirect you to the edit page, where you can update the hero's details, including deleting selected photos or uploading new ones.
-12. To go back to the list of heroes, click the "Back to List" button.
+    - "Last" button: Click to go to the last page.
+      Note: If you are on the first page, the "Previous" and "First" buttons will be disabled. If you are on the last page, the "Next" and "Last" buttons will be disabled.
+7.  You can also filter the heroes by nickname on the initial page by entering the nickname in the filter input. If no heroes match the filter, a text warning will be displayed.
+8.  Each hero item in the list will have two buttons: "Delete" and "Details".
+9.  Clicking the "Delete" button will remove the hero from the list.
+10. Clicking the "Details" button will redirect you to a detailed hero information page.
+11. On the details page, you will find an "Edit" button to modify the hero's information.
+12. Clicking the "Edit" button will redirect you to the edit page, where you can update the hero's details, including deleting selected photos or uploading new ones.
+13. To go back to the list of heroes, click the "Back to List" button.
 
 Please note the pagination behavior described above, which includes conditional display of pagination buttons based on the current page.
 
