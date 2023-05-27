@@ -25,8 +25,9 @@ export default class HeroesController {
   async findAll(
     @Query('page') page = 1,
     @Query('limit') limit = 5,
+    @Query('nickname') nickname?: string,
   ): Promise<{ data: IHeroResponse[]; totalHeroes: number }> {
-    return this.heroesService.findAll(page, limit);
+    return this.heroesService.findAll(page, limit, nickname);
   }
 
   @Get('/:id')

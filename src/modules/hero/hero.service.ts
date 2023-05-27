@@ -17,13 +17,22 @@ export default class HeroesService {
   async findAll(
     page: number,
     limit: number,
+    nickname?: string,
   ): Promise<{ data: IHeroResponse[]; totalHeroes: number }> {
     try {
       const skip = (page - 1) * limit;
-      const [heroes, totalCount] = await this.heroesRepository.findAndCount({
-        skip,
-        take: limit,
-      });
+
+      const queryBuilder = this.heroesRepository.createQueryBuilder('hero');
+      if (nickname) {
+        queryBuilder.where('hero.nickname LIKE :nickname', {
+          nickname: `%${nickname}%`,
+        });
+      }
+
+      const [heroes, totalCount] = await queryBuilder
+        .skip(skip)
+        .take(limit)
+        .getManyAndCount();
 
       const formattedHeroes: IHeroResponse[] = heroes.map((hero) => ({
         id: hero.id,
