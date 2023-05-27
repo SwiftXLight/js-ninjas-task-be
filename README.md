@@ -2,6 +2,14 @@
 
 This README provides instructions on how to run the web application, which consists of two repositories: the frontend and the backend. The application allows users to manage a list of heroes, perform CRUD operations, and upload images.
 
+## Deployment on AWS
+
+The web application has been deployed on AWS using EC2, S3, and RDS. You can access the deployed application at the following URL: http://js-ninjas-fe.s3-website.eu-central-1.amazonaws.com/
+
+The deployed application includes some pre-made hero items to facilitate testing. Feel free to explore the deployed version and test its functionalities.
+
+## Running the Application Locally
+
 ## Assumptions
 
 - Node.js and npm are already installed on the system.
@@ -125,4 +133,4 @@ Please note the pagination behavior described above, which includes conditional 
 
 ## Summary
 
-This web application allows you to manage a list of heroes, perform CRUD operations, and upload images. Follow the installation, configuration, and usage instructions provided to run the application successfully. If you have any questions or encounter any issues, please refer to the documentation or seek assistance from the development team.
+This web application allows you to manage a list of heroes, perform CRUD operations, and upload images. Follow the installation, configuration, and usage instructions provided to run the application successfully. If you have any questions or encounter any issues, please refer to the documentation or seek assistance from me.
